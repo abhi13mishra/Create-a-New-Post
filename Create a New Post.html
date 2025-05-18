@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create a Post</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    input, textarea {
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .response {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Create a New Post</h2>
+
+  <form id="postForm">
+    <label>
+      Title:
+      <input type="text" id="title" required>
+    </label>
+    <label>
+      Body:
+      <textarea id="body" rows="5" required></textarea>
+    </label>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div class="response" id="responseArea"></div>
+
+  <script>
+    const form = document.getElementById('postForm');
+    const responseArea = document.getElementById('responseArea');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault(); 
+
+      const title = document.getElementById('title').value.trim();
+      const body = document.getElementById('body').value.trim();
+
+      if (!title || !body) {
+        alert('Both fields are required!');
+        return;
+      }
+
+      fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title,
+          body: body
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        responseArea.innerHTML = `
+          <h3>Post Created!</h3>
+          <p><strong>ID:</strong> ${data.id}</p>
+          <p><strong>Title:</strong> ${data.title}</p>
+          <p><strong>Body:</strong> ${data.body}</p>
+        `;
+        form.reset(); // Clear form
+      })
+      .catch(error => {
+        responseArea.innerHTML = `<p style="color:red;">Error: ${error}</p>`;
+      });
+    });
+  </script>
+
+</body>
+</html>
